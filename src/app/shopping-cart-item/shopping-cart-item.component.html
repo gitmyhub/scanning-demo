@@ -1,0 +1,15 @@
+<span *ngIf="shoppingCartItems.size===0">Shopping cart is empty (Align BarCode with entire View Port)</span>
+<div *ngFor="let article of this.shoppingCartItems.entries()" class="shopping-cart-item">
+
+
+  <div class="article-name">{{ article[0].name }}</div>
+  
+  <div *ngIf="article[1] > 1; else zerocount" class="article-count">{{ article[1] }} X ${{article[0].price}}</div>
+  <ng-template #zerocount> 
+    <div class="article-count">${{article[0].price}}</div>
+  </ng-template>
+
+</div>
+<div *ngIf="shoppingCartItems.size > 0" class="shopping-cart-total">
+  Total: {{ totalPrice }} USD
+</div>

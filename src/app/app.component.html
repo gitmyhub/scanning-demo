@@ -1,0 +1,14 @@
+<div class="error-message" *ngIf="errorMessage">
+  {{ errorMessage }}
+</div>
+
+<div id="interactive" class="viewport">
+  <!-- QuaggaJS will populate this element -->
+</div>
+
+<div class="shopping-cart">
+    <app-shopping-cart-item></app-shopping-cart-item>
+</div>
+<div class="center">
+  <button class="btn btn-primary exit" (click)="onClick()">Exit Application</button>  
+</div>
