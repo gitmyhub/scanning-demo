@@ -14,12 +14,7 @@ export class AppComponent implements OnInit{
 
   errorMessage: string;
 
-  private catalogue: Article[] = [
-    { name: 'Classy Crab (red)', ean: '7601234567890', image: 'assets/classy_crab_red.png', price: 10 },
-    { name: 'Classy Crab (blue)', ean: '7601234561232', image: 'assets/classy_crab_blue.png', price: 10 },
-    { name: 'Classy Crab (gold, ltd. ed.)', ean: '7601234564561', image: 'assets/classy_crab_gold.png', price: 50 },
-    { name: 'Classy Crab (Diamond, ltd. ed.)', ean: '7601274167890', image: 'assets/classy_crab_gold.png', price: 100 },
-  ];
+  private catalogue: Article[] = [];
 
   private lastScannedCodeDate: number;
 
@@ -85,8 +80,6 @@ export class AppComponent implements OnInit{
         this.beepService.beep();
     }
 
-
-    // this.changeDetectorRef.detectChanges();
   }
 
   onClick(){
