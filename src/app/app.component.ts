@@ -1,11 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { BeepService } from './beep.service';
+import { BeepService } from './services/beep.service';
 import Quagga from 'quagga';
-import { Article } from './article';
-import { ShoppingCart } from './shopping-cart';
-import { ApiService } from './api.service';
+import { Article } from './models/article';
+import { ShoppingCartService } from './services/shopping-cart.service';
+import { ApiService } from './services/api.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { ErrorDialogComponent } from './error-dialog/error-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-root',
@@ -13,9 +15,11 @@ import { takeUntil } from 'rxjs/operators';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit, OnDestroy {
-
+  dialogOpen: boolean;
+  loading: boolean;
   errorMessage: string;
   destroy$ = new Subject<void>();
+  showExitButton: boolean;
   private catalogue: Article[] = [];
 
   private lastScannedCodeDate: number;
@@ -23,7 +27,8 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(
     private beepService: BeepService,
     private api: ApiService,
-    public shoppingCart: ShoppingCart) {
+    public dialog: MatDialog,
+    public shoppingCartService: ShoppingCartService) {
   }
 
   ngOnInit(): void {
@@ -31,10 +36,11 @@ export class AppComponent implements OnInit, OnDestroy {
       this.errorMessage = 'getUserMedia is not supported';
       return;
     }
-
-    this.api.get('assets/db.json')
+    this.loading = true;
+    this.showExitButton = false;
+    this.api.get<Article[]>('assets/db.json')
       .pipe(takeUntil(this.destroy$))
-      .subscribe((res: any) => {
+      .subscribe((res: Article[]) => {
         this.catalogue = res;
       });
 
@@ -59,6 +65,7 @@ export class AppComponent implements OnInit, OnDestroy {
           this.errorMessage = `QuaggaJS could not be initialized, err: ${err}`;
         } else {
           Quagga.start();
+          this.loading =  false;
           Quagga.onDetected((res) => {
             this.onBarcodeScanned(res.codeResult.code);
           });
@@ -67,7 +74,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   onBarcodeScanned(code: string) {
-
+    const scannedArticles = this.getScannedArticles();
     // ignore duplicates for an interval of 1.5 seconds
     const now = new Date().getTime();
     if (now < this.lastScannedCodeDate + 2000) {
@@ -77,16 +84,24 @@ export class AppComponent implements OnInit, OnDestroy {
     // ignore unknown articles
     const article = this.catalogue.find(a => a.ean === code);
     if (!article) {
-      alert('Product not found');
+      this.openDialog();
     } else {
-      this.shoppingCart.addArticle(article);
+      this.shoppingCartService.addArticle(article);
       this.lastScannedCodeDate = now;
       this.beepService.beep();
     }
 
   }
 
-  onClick() {
+  getScannedArticles(){
+    this.shoppingCartService.getArticles().subscribe((articles: Map<Article, number>) => {
+      if (articles.size > 0){
+        this.showExitButton = true;
+      }
+    });
+  }
+
+  onExitClicked() {
     window.print();
   }
 
@@ -94,4 +109,16 @@ export class AppComponent implements OnInit, OnDestroy {
     this.destroy$.next();
   }
 
+  openDialog(): void {
+    if (!this.dialogOpen){
+      this.dialogOpen = true;
+      const dialogRef = this.dialog.open(ErrorDialogComponent, {
+        width: '450px',
+        data: 'Product not found'
+      });
+      dialogRef.afterClosed().subscribe(result => {
+        this.dialogOpen = false;
+      });
+    }
+  }
 }

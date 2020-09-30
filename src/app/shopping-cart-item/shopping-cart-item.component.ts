@@ -1,7 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ShoppingCart } from '../shopping-cart';
+import { ShoppingCartService } from '../services/shopping-cart.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { Article } from '../models/article';
 
 @Component({
   selector: 'app-shopping-cart-item',
@@ -10,18 +11,18 @@ import { takeUntil } from 'rxjs/operators';
 })
 export class ShoppingCartItemComponent implements OnInit, OnDestroy {
 
-  shoppingCartItems: any;
-  totalPrice: any;
+  shoppingCartItems: Map<Article, number>;
+  totalPrice: number;
   destroy$ = new Subject<void>();
 
-  constructor(public shoppingCart: ShoppingCart) {
+  constructor(public shoppingCartService: ShoppingCartService) {
   }
 
   ngOnInit(): void {
-    this.shoppingCart.getArticles()
+    this.shoppingCartService.getArticles()
       .pipe(takeUntil(this.destroy$))
-      .subscribe((res) => {
-        this.shoppingCartItems = res;
+      .subscribe((scannedArticles: Map<Article, number>) => {
+        this.shoppingCartItems = scannedArticles;
         this.totalPrice = this.getTotalPrice();
       });
   }
@@ -36,7 +37,7 @@ export class ShoppingCartItemComponent implements OnInit, OnDestroy {
     }
     return total;
   }
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroy$.next();
   }
 

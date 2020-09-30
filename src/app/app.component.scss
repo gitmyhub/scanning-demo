@@ -4,9 +4,18 @@
   color: red;
   padding: 8px;
 }
+.drawingBuffer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0px;
+  height: 0px;
+  display: none;
+}
 
 .viewport {
   height: 400px;
+  width: 100%;
 }
 
 .viewport::ng-deep video {
@@ -29,10 +38,15 @@
 
 .center {
   display: flex;
-  justify-content: center;
+  justify-content: left;
   align-items: center;
   height: 100px;
+  margin-left: 10px;
   // border: 3px solid green;
+}
+
+.spinner{
+  margin-top: 60px;
 }
 
 .exit{
@@ -41,10 +55,10 @@
 
 @media print {
   #interactive {
-    display: none;
+    display: none !important;
   }
   .center .exit{
-    display: none;
+    display: none !important;
   }
 }
 

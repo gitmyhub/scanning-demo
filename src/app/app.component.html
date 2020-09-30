@@ -2,13 +2,17 @@
   {{ errorMessage }}
 </div>
 
-<div id="interactive" class="viewport">
+<div id="interactive" class="viewport" fxLayout="column" fxLayoutAlign="end center">
+  <mat-spinner class="spinner" *ngIf="loading"></mat-spinner>
   <!-- QuaggaJS will populate this element -->
+  <video class="videoCamera" autoplay="true" preload="auto" src="" muted="true" playsinline="true"></video>
+  <canvas class="drawingBuffer"></canvas>
 </div>
 
 <div class="shopping-cart">
-    <app-shopping-cart-item></app-shopping-cart-item>
+  <app-shopping-cart-item></app-shopping-cart-item>
 </div>
-<div class="center">
-  <button class="btn btn-primary exit" (click)="onClick()">Exit Application</button>  
+
+<div class="center" *ngIf="showExitButton">
+  <button class="btn btn-primary exit" (click)="onExitClicked()">Exit Application</button>
 </div>

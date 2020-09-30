@@ -1,12 +1,12 @@
-<span *ngIf="shoppingCartItems.size===0">Shopping cart is empty (Align BarCode with entire View Port)</span>
-<div *ngFor="let article of this.shoppingCartItems.entries()" class="shopping-cart-item">
+<h2 *ngIf="shoppingCartItems.size===0">Shopping cart is empty (Align BarCode with entire View Port)</h2>
+<div *ngFor="let article of this.shoppingCartItems | keyvalue" class="shopping-cart-item">
 
 
-  <div class="article-name">{{ article[0].name }}</div>
+  <div class="article-name">{{ article.key.name }}</div>
   
-  <div *ngIf="article[1] > 1; else zerocount" class="article-count">{{ article[1] }} X ${{article[0].price}}</div>
+  <div *ngIf="article.value > 1; else zerocount" class="article-count">{{ article.value }} X ${{article.key.price}}</div>
   <ng-template #zerocount> 
-    <div class="article-count">${{article[0].price}}</div>
+    <div class="article-count">${{article.key.price}}</div>
   </ng-template>
 
 </div>
